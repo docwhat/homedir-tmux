@@ -50,11 +50,7 @@ function list {
 
 function projects {
   [[ $show_headers = true ]] && echo "Projects:"
-  local pdir
-  find -L ~/work ~/projects ~/git -maxdepth 2 -type d -name '.git' | while read pdir; do
-    local name=$(basename $(dirname "${pdir}"))
-    echo "${name}"
-  done | sort -u
+  find -L  ~/work ~/projects ~/git -maxdepth 2 -type d -regex '.*/\(\.svn\|\.git\|\.hg\|CVS\)' -print | perl -p -e 's!.*/([^/]*)/[^/]+$!$1\n!g' | sort -u
   exit 0
 }
 
