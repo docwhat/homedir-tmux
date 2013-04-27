@@ -6,7 +6,7 @@ set -eu
 function connect {
   local session="${1:-}"
   if [[ -n "${session}" && -z "${start_dir}" ]]; then
-    start_dir=$(find ~/work ~/projects ~/git -maxdepth 2 -type d -iregex ".*/${session}/.git" | head -n 1)
+    start_dir=$(find ~/work ~/projects -maxdepth 2 -type d -iregex ".*/${session}/.git" | head -n 1)
     if [[ -n "${start_dir}" ]]; then
       start_dir=$(dirname "${start_dir}")
     fi
@@ -29,28 +29,34 @@ function simple_connect {
   local session="${1:-main}"
   [[ -n "${start_dir}" ]] && cd "${start_dir}"
 
+  local shell="$SHELL"
+
+  #if hash reattach-to-user-namespace; then
+    #shell="reattach-to-user-namespace -l ${shell}"
+  #fi
+
   if tmux has-session -t "${session}"; then
     echo -n "[attaching '${session}']"
     exec tmux -u attach -t "${session}"
   else
     echo -n "[starting '${session}']"
-    exec tmux -u new-session -s "${session}"
+    exec tmux -u new-session -s "${session}" "${shell}"
   fi
 }
 
 function list {
   if [[ $show_headers = true ]]; then
     echo "Sessions:"
-    tmux list-sessions
+    tmux list-sessions 2> /dev/null
   else
-    tmux list-sessions | sed 's/:.*//g'
+    tmux list-sessions 2> /dev/null | sed 's/:.*//g'
   fi
   exit 0
 }
 
 function projects {
   [[ $show_headers = true ]] && echo "Projects:"
-  find -L  ~/work ~/projects ~/git -maxdepth 2 -type d -regex '.*/\(\.svn\|\.git\|\.hg\|CVS\)' -print | perl -p -e 's!.*/([^/]*)/[^/]+$!$1\n!g' | sort -u
+  find -L  ~/work ~/projects -maxdepth 2 -type d -regex '.*/\(\.svn\|\.git\|\.hg\|CVS\)' -print | perl -p -e 's!.*/([^/]*)/[^/]+$!$1\n!g' | sort -u
   exit 0
 }
 
