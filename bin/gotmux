@@ -31,10 +31,6 @@ function simple_connect {
 
   local shell="$SHELL"
 
-  #if hash reattach-to-user-namespace; then
-    #shell="reattach-to-user-namespace -l ${shell}"
-  #fi
-
   if tmux has-session -t "${session}"; then
     echo -n "[attaching '${session}']"
     exec tmux -u attach -t "${session}"
