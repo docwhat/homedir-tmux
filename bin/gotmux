@@ -8,7 +8,7 @@ function connect {
   if [[ -n "${session}" && -z "${start_dir}" ]]; then
     start_dir=$(find ~/work ~/projects -maxdepth 2 -type d -iregex ".*/${session}/.git" | head -n 1)
     if [[ -n "${start_dir}" ]]; then
-      start_dir=$(dirname "${start_dir}")
+      start_dir=${start_dir%/*}
     fi
   fi
   if [[ -z "${session}" ]]; then
