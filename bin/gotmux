@@ -29,14 +29,12 @@ function simple_connect {
   local session="${1:-main}"
   [[ -n "${start_dir}" ]] && cd "${start_dir}"
 
-  local shell="$SHELL"
-
   if tmux has-session -t "${session}"; then
     echo -n "[attaching '${session}']"
     exec tmux -u attach -t "${session}"
   else
     echo -n "[starting '${session}']"
-    exec tmux -u new-session -s "${session}" "${shell}"
+    exec tmux -u new-session -s "${session}"
   fi
 }
 
